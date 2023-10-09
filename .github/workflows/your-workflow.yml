@@ -1,0 +1,34 @@
+name: Setup and Use Self-hosted Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  self-hosted-runner-job:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Create and set up self-hosted runner
+      run: |
+        mkdir actions-runner
+        cd actions-runner
+
+        Invoke-WebRequest -Uri https://github.com/actions/runner/releases/download/v2.309.0/actions-runner-win-x64-2.309.0.zip -OutFile actions-runner-win-x64-2.309.0.zip
+
+        if ((Get-FileHash -Path actions-runner-win-x64-2.309.0.zip -Algorithm SHA256).Hash.ToUpper() -ne 'cd1920154e365689130aa1f90258e0da47faecce547d0374475cdd2554dbf09a'.ToUpper()) {
+          throw 'Computed checksum did not match'
+        }
+
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD/actions-runner-win-x64-2.309.0.zip", "$PWD")
+
+        ./config.cmd --url https://github.com/chiragop1234/testing --token BA446HHKEBCRXFVL54CKFPLFEQQNA
+
+        ./run.cmd
+
+    - name: Use self-hosted runner
+      run: |
+        echo "runs-on: self-hosted" >> $GITHUB_WORKSPACE/.github/workflows/your-workflow.yml
