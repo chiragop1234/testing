@@ -27,8 +27,6 @@ jobs:
 
         ./config.cmd --url https://github.com/chiragop1234/testing --token BA446HHKEBCRXFVL54CKFPLFEQQNA
 
-        # Create directory if it doesn't exist
-        if not exist "$GITHUB_WORKSPACE\.github\workflows" mkdir "$GITHUB_WORKSPACE\.github\workflows"
-
-        # Use this YAML in your workflow file for each job
-        echo "runs-on: self-hosted" >> "$GITHUB_WORKSPACE\.github\workflows\your-workflow.yml"
+        # Create directory if it doesn't exist and write to the file
+        mkdir -p $GITHUB_WORKSPACE/.github/workflows
+        echo "runs-on: self-hosted" >> $GITHUB_WORKSPACE/.github/workflows/your-workflow.yml
